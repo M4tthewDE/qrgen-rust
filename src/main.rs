@@ -86,28 +86,32 @@ fn encode_data(input: &str) {
     }
 
     // fill with leading zeroes
-    for mut part in data {
+    for part in data.iter_mut() {
         let tmp_int = isize::from_str_radix(&part, 2).unwrap();
         if tmp_int.to_string().chars().count() == 3 {
             while part.chars().count() < 10 {
-                part = "0".to_string() + &part;   
+                *part = "0".to_string() + &part;   
             }
         }
         if tmp_int.to_string().chars().count() == 2 {
             while part.chars().count() < 7 {
-                part = "0".to_string() + &part;
+                *part = "0".to_string() + &part;
             }
         }
         if tmp_int.to_string().chars().count() == 1 {
             while part.chars().count() < 4 {
-                part = "0".to_string() + &part;
+                *part = "0".to_string() + &part;
             }
         }
-        println!("{}", part);
     }
 
     // put it all together
+    for part in data.iter() {
+        result.push(part);
+    }
 
-    println!("Mode: {}", mode);
-    println!("Length: {}", length);
+    // add terminator
+    result.push("0000");
+
+    println!("End: {:?}", result);
 }
