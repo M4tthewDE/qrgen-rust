@@ -59,9 +59,9 @@ fn encode_data(input: &str) {
         length = "0".to_string() + &length;        
     }
 
-    let mut result = vec![];
-    result.push(mode);
-    result.push(&length);
+    let mut result_arr = vec![];
+    result_arr.push(mode);
+    result_arr.push(&length);
 
     let chars: Vec<char> = input.chars().collect();
     let mut data_str = vec![];
@@ -90,28 +90,68 @@ fn encode_data(input: &str) {
         let tmp_int = isize::from_str_radix(&part, 2).unwrap();
         if tmp_int.to_string().chars().count() == 3 {
             while part.chars().count() < 10 {
-                *part = "0".to_string() + &part;   
+                *part = "0".to_string() + part;   
             }
         }
         if tmp_int.to_string().chars().count() == 2 {
             while part.chars().count() < 7 {
-                *part = "0".to_string() + &part;
+                *part = "0".to_string() + part;
             }
         }
         if tmp_int.to_string().chars().count() == 1 {
             while part.chars().count() < 4 {
-                *part = "0".to_string() + &part;
+                *part = "0".to_string() + part;
             }
         }
     }
 
     // put it all together
     for part in data.iter() {
-        result.push(part);
+        result_arr.push(part);
     }
 
     // add terminator
-    result.push("0000");
+    // note: this is only needed 
+    // if the sequence does not fill out the entire available space!
+    // TODO: check if neede!
+    result_arr.push("0000");
 
-    println!("End: {:?}", result);
+    // concat elements
+    let mut result = String::from("");
+    for e in result_arr {
+        result = result + e;
+    }
+
+    codeword_conversion(&result);
+}
+
+fn codeword_conversion(data: &str) {
+    println!("{}", data);
+    // divide in parts with length=8
+    let mut data_str = vec![];
+    let mut tmp = String::from("");
+    for (pos, c) in data.chars().enumerate() {
+        tmp.push(c);
+        if ((pos+1) % 8 == 0) && (pos != 0) {
+            data_str.push(tmp.to_string());            
+            tmp.clear();
+        }
+        if pos == data.len()-1 {
+            data_str.push(tmp.to_string());
+        }
+    }
+
+    // add padding bits to last element if it's too short
+    match data_str.last_mut() {
+        Some(x) => {
+            if x.len() < 8 {
+                while x.chars().count() < 8 {
+                    x.push('0');
+                }
+            }
+        },
+        None => println!("Empty data!"),
+    }    
+
+    println!("{:?}", data_str);
 }
