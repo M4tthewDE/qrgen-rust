@@ -115,7 +115,7 @@ fn encode_data(input: &str) {
     // add terminator
     // note: this is only needed 
     // if the sequence does not fill out the entire available space!
-    // TODO: check if neede!
+    // TODO: check if needed!
     result_arr.push("0000");
 
     // concat elements
@@ -167,6 +167,7 @@ fn codeword_conversion(data: &str) {
     // -> we are using version 1 and error correction leve L to start out
     let pad_codewords_amount = (152-bits_used)/8;
 
+    // 3. add Pad Codewords alternately
     for i in 0..pad_codewords_amount {
         if i % 2 == 0 {
             data_str.push("11101100".to_string());            
@@ -174,6 +175,4 @@ fn codeword_conversion(data: &str) {
             data_str.push("00010001".to_string());            
         }
     }
-
-    println!("{:?}", data_str);
 }
