@@ -1,3 +1,5 @@
+// reference: https://www.swisseduc.ch/informatik/theoretische_informatik/qr_codes/docs/qr_standard.pdf
+
 extern crate image;
 
 use image::{ImageBuffer, RgbImage};
@@ -152,6 +154,26 @@ fn codeword_conversion(data: &str) {
         },
         None => println!("Empty data!"),
     }    
+
+    // add Pad Codewords 11101100 and 00010001 alternately
+    // 1. find out how many bits are used up
+    let mut bits_used = 0;
+    for e in data_str.iter() {
+        bits_used = bits_used + e.len();
+    }
+     
+    // 2. calculate how many Pad Codewords need to be added
+    // -> depends on the version and error correction level
+    // -> we are using version 1 and error correction leve L to start out
+    let pad_codewords_amount = (152-bits_used)/8;
+
+    for i in 0..pad_codewords_amount {
+        if i % 2 == 0 {
+            data_str.push("11101100".to_string());            
+        } else {
+            data_str.push("00010001".to_string());            
+        }
+    }
 
     println!("{:?}", data_str);
 }
