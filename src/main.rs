@@ -126,7 +126,7 @@ fn encode_data(input: &str) {
 }
 
 fn codeword_conversion(data: &str) {
-    println!("{}", data);
+
     // divide in parts with length=8
     let mut data_str = vec![];
     let mut tmp = String::from("");
