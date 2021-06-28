@@ -20,33 +20,33 @@ fn generate_image() {
 fn setup(mut buf: RgbImage) {
     // fill image out with white pixels
     for (_, _, pixel) in buf.enumerate_pixels_mut() {
-        *pixel = image::Rgb([255, 255, 255 as u8]);
+        *pixel = image::Rgb([255, 255, 255u8]);
     }
     add_pos_patterns(buf)
 }
 
 fn add_pos_patterns(mut buf: RgbImage) {
     for i in 0..7 {
-        *buf.get_pixel_mut(0, i) = image::Rgb([0, 0 , 0 as u8]);
-        *buf.get_pixel_mut(6, i) = image::Rgb([0, 0 , 0 as u8]);
-        *buf.get_pixel_mut(i, 0) = image::Rgb([0, 0 , 0 as u8]);
-        *buf.get_pixel_mut(i, 6) = image::Rgb([0, 0 , 0 as u8]);
+        *buf.get_pixel_mut(0, i) = image::Rgb([0, 0 , 0u8]);
+        *buf.get_pixel_mut(6, i) = image::Rgb([0, 0 , 0u8]);
+        *buf.get_pixel_mut(i, 0) = image::Rgb([0, 0 , 0u8]);
+        *buf.get_pixel_mut(i, 6) = image::Rgb([0, 0 , 0u8]);
 
-        *buf.get_pixel_mut(0, i+14) = image::Rgb([0, 0 , 0 as u8]);
-        *buf.get_pixel_mut(6, i+14) = image::Rgb([0, 0 , 0 as u8]);
-        *buf.get_pixel_mut(i+14, 0) = image::Rgb([0, 0 , 0 as u8]);
-        *buf.get_pixel_mut(i+14, 6) = image::Rgb([0, 0 , 0 as u8]);
+        *buf.get_pixel_mut(0, i+14) = image::Rgb([0, 0 , 0u8]);
+        *buf.get_pixel_mut(6, i+14) = image::Rgb([0, 0 , 0u8]);
+        *buf.get_pixel_mut(i+14, 0) = image::Rgb([0, 0 , 0u8]);
+        *buf.get_pixel_mut(i+14, 6) = image::Rgb([0, 0 , 0u8]);
 
-        *buf.get_pixel_mut(0+14, i) = image::Rgb([0, 0 , 0 as u8]);
-        *buf.get_pixel_mut(6+14, i) = image::Rgb([0, 0 , 0 as u8]);
-        *buf.get_pixel_mut(i, 0+14) = image::Rgb([0, 0 , 0 as u8]);
-        *buf.get_pixel_mut(i, 6+14) = image::Rgb([0, 0 , 0 as u8]);
+        *buf.get_pixel_mut(14, i) = image::Rgb([0, 0 , 0u8]);
+        *buf.get_pixel_mut(20, i) = image::Rgb([0, 0 , 0u8]);
+        *buf.get_pixel_mut(i, 14) = image::Rgb([0, 0 , 0u8]);
+        *buf.get_pixel_mut(i, 20) = image::Rgb([0, 0 , 0u8]);
     }
     for i in 2..5 {
         for j in 2..5 {
-            *buf.get_pixel_mut(i, j) = image::Rgb([0, 0 , 0 as u8]);
-            *buf.get_pixel_mut(i, j+14) = image::Rgb([0, 0 , 0 as u8]);
-            *buf.get_pixel_mut(i+14, j) = image::Rgb([0, 0 , 0 as u8]);
+            *buf.get_pixel_mut(i, j) = image::Rgb([0, 0 , 0u8]);
+            *buf.get_pixel_mut(i, j+14) = image::Rgb([0, 0 , 0u8]);
+            *buf.get_pixel_mut(i+14, j) = image::Rgb([0, 0 , 0u8]);
         }
     }
 
@@ -61,9 +61,7 @@ fn encode_data(input: &str) {
         length = "0".to_string() + &length;        
     }
 
-    let mut result_arr = vec![];
-    result_arr.push(mode);
-    result_arr.push(&length);
+    let mut result_arr = vec![mode, &length];
 
     let chars: Vec<char> = input.chars().collect();
     let mut data_str = vec![];
@@ -121,7 +119,7 @@ fn encode_data(input: &str) {
     // concat elements
     let mut result = String::from("");
     for e in result_arr {
-        result = result + e;
+        result += e;
     }
 
     codeword_conversion(&result);
@@ -159,7 +157,7 @@ fn codeword_conversion(data: &str) {
     // 1. find out how many bits are used up
     let mut bits_used = 0;
     for e in data_str.iter() {
-        bits_used = bits_used + e.len();
+        bits_used += e.len();
     }
      
     // 2. calculate how many Pad Codewords need to be added
