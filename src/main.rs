@@ -87,7 +87,7 @@ fn encode_data(input: &str) {
         data.push(format!("{:b}", part.parse::<i32>().unwrap()));
     }
 
-    // fill with leading zeroes
+    // fill with leading zeros
     for part in data.iter_mut() {
         let tmp_int = isize::from_str_radix(&part, 2).unwrap();
         if tmp_int.to_string().chars().count() == 3 {
@@ -175,4 +175,16 @@ fn codeword_conversion(data: &str) {
             data_str.push("00010001".to_string());            
         }
     }
+
+    add_error_correction(data_str);
+}
+
+// for version 1 and error correction L
+fn add_error_correction(data: Vec<String>) {
+    // TOtal number of codewords: 26
+    // Number of error correction codewords: 7
+    // Number of error correction blocks: 1
+    // Error correction code per block: (26,19,2)
+
+    println!("{:?}", data);
 }
