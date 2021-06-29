@@ -179,7 +179,7 @@ fn codeword_conversion(data: &str) {
 
 // for version 1 and error correction L
 fn add_error_correction(data: Vec<String>) {
-    // TOtal number of codewords: 26
+    // Total number of codewords: 26
     // Number of error correction codewords: 7
     // Number of error correction blocks: 1
     // Error correction code per block: (26,19,2)
