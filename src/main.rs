@@ -3,6 +3,7 @@
 extern crate image;
 
 mod error_correction;
+use error_correction::{build_correction_calculator, CorrectionCalculator};
 
 use image::{ImageBuffer, RgbImage};
 
@@ -175,5 +176,7 @@ fn codeword_conversion(data: &str) {
             data_str.push("00010001".to_string());            
         }
     }
-    error_correction::add_error_correction(data_str);
+    let correction_calculator: CorrectionCalculator = build_correction_calculator();
+    println!("{:?}", correction_calculator.gf_log);
+    println!("{:?}", correction_calculator.gf_exp);
 }

@@ -1,13 +1,50 @@
 const PRIM: u32 = 0x11d;
 
-// for version 1 and error correction L
-pub fn add_error_correction(data: Vec<String>) {
-    // Total number of codewords: 26
-    // Number of error correction codewords: 7
-    // Number of error correction blocks: 1
-    // Error correction code per block: (26,19,2)
+pub fn build_correction_calculator() -> CorrectionCalculator {
+    let mut correction_calculator = CorrectionCalculator {
+        gf_log: Vec::new(),
+        gf_exp: Vec::new()
+    };
+    correction_calculator.init_tables();
+    correction_calculator
+}
 
-    init_tables()
+pub struct CorrectionCalculator {
+    pub gf_log: Vec<u32>,
+    pub gf_exp: Vec<u32>
+}
+
+impl CorrectionCalculator {
+    // for version 1 and error correction L
+    pub fn _add_error_correction(_data: Vec<String>) {
+        // Total number of codewords: 26
+        // Number of error correction codewords: 7
+        // Number of error correction blocks: 1
+        // Error correction code per block: (26,19,2)
+    }
+
+    pub fn init_tables(&mut self) {
+        let mut gf_exp: Vec<u32> = (0..512).collect();
+        let mut gf_log: Vec<u32> = (0..256).collect();
+
+        let mut count_helper = 0;
+        let mut x = 1;
+        for i in gf_exp.iter_mut() {
+            *i = x;
+            if count_helper < 255 {
+                gf_log[x as usize] = count_helper;
+                count_helper += 1;
+            }
+            x = gf_mult_no_lut(x, 2, PRIM);
+        }
+
+        for i in 255..512 {
+            gf_exp[i] = gf_exp[i-255]
+        }
+        self.gf_exp = gf_exp;
+        self.gf_log = gf_log;
+    }
+
 }
 
 fn gf_mult_no_lut(x: u32, y:u32, prim: u32) -> u32 {
@@ -60,25 +97,4 @@ fn gf_mult_no_lut(x: u32, y:u32, prim: u32) -> u32 {
         result = cl_div(result, prim);
     }
     result
-}
-
-fn init_tables() {
-    let mut gf_exp: Vec<u32> = (0..512).collect();
-    let mut gf_log: Vec<u32> = (0..256).collect();
-
-    let mut count_helper = 0;
-    let mut x = 1;
-    for i in gf_exp.iter_mut() {
-        *i = x;
-        if count_helper < 255 {
-            gf_log[x as usize] = count_helper;
-            count_helper += 1;
-        }
-        x = gf_mult_no_lut(x, 2, PRIM);
-    }
-
-    for i in 255..512 {
-        gf_exp[i] = gf_exp[i-255]
-    }
-    println!("{:?}", gf_log);
 }
