@@ -2,6 +2,8 @@
 
 extern crate image;
 
+mod error_correction;
+
 use image::{ImageBuffer, RgbImage};
 
 fn main() {
@@ -173,16 +175,5 @@ fn codeword_conversion(data: &str) {
             data_str.push("00010001".to_string());            
         }
     }
-
-    add_error_correction(data_str);
-}
-
-// for version 1 and error correction L
-fn add_error_correction(data: Vec<String>) {
-    // Total number of codewords: 26
-    // Number of error correction codewords: 7
-    // Number of error correction blocks: 1
-    // Error correction code per block: (26,19,2)
-
-    println!("{:?}", data);
+    error_correction::add_error_correction(data_str);
 }
