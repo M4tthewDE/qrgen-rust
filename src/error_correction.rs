@@ -61,6 +61,14 @@ impl CorrectionCalculator {
         }
         return self.gf_exp[((self.gf_log[x as usize]+255 - self.gf_log[y as usize]) % 255) as usize];
     }
+
+    fn gf_pow(self, x: u32, power: u32) -> u32 {
+        return self.gf_exp[((self.gf_log[x as usize] * power)) as usize]
+    }
+
+    fn gf_inverse(self, x: u32) -> u32 {
+        return self.gf_exp[(255 - self.gf_log[x as usize]) as usize]
+    }
 }
 
 fn gf_mult_no_lut(x: u32, y:u32, prim: u32) -> u32 {
