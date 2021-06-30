@@ -5,7 +5,7 @@ pub fn add_error_correction(data: Vec<String>) {
     // Number of error correction blocks: 1
     // Error correction code per block: (26,19,2)
 
-    println!("{}", format!("{:b}", gf_mult_no_lut(0b10001001, 0b00101010, 0x12d)));
+    println!("{}", format!("{:b}", gf_mult_no_lut(0b10001001, 0b00101010, 0x11d)));
 }
 
 fn gf_mult_no_lut(x: i32, y:i32, prim: i32) -> i32 {
@@ -19,7 +19,7 @@ fn gf_mult_no_lut(x: i32, y:i32, prim: i32) -> i32 {
             }
             i += 1
         }
-        return z;
+        z
     }
 
     // compute position of the most significant bit
@@ -31,7 +31,7 @@ fn gf_mult_no_lut(x: i32, y:i32, prim: i32) -> i32 {
             }
         }
 
-        return bits+1;
+        bits+1
     }
 
     // carry-less long division, returns remainder
@@ -44,11 +44,11 @@ fn gf_mult_no_lut(x: i32, y:i32, prim: i32) -> i32 {
         }
 
         for i in (0..dl1-dl2+1).rev() {
-            if (dividend & (1 << i+dl2-1)) != 0 {
+            if (dividend & (1 << (i+dl2-1))) != 0 {
                 dividend ^= divisor << i;
             }
         }
-        return dividend
+        dividend
     }
 
     let mut result = cl_mult(x, y);
@@ -57,5 +57,5 @@ fn gf_mult_no_lut(x: i32, y:i32, prim: i32) -> i32 {
     if prim > 0 {
         result = cl_div(result, prim);
     }
-    return result;
+    result
 }
