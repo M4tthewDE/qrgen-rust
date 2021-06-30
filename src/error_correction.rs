@@ -45,6 +45,22 @@ impl CorrectionCalculator {
         self.gf_log = gf_log;
     }
 
+    fn gf_mul(self, x: u32, y: u32) -> u32 {
+        if x == 0 || y == 0 {
+            return 0;
+        }
+        return self.gf_exp[(self.gf_log[x as usize] + self.gf_log[y as usize]) as usize];
+    }
+
+    fn gf_div(self, x: u32, y: u32) -> u32 {
+        if y == 0 {
+            panic!("ZeroDivision");
+        } 
+        if x == 0 {
+            return 0;
+        }
+        return self.gf_exp[((self.gf_log[x as usize]+255 - self.gf_log[y as usize]) % 255) as usize];
+    }
 }
 
 fn gf_mult_no_lut(x: u32, y:u32, prim: u32) -> u32 {
