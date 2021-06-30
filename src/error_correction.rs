@@ -5,7 +5,7 @@ pub fn add_error_correction(data: Vec<String>) {
     // Number of error correction blocks: 1
     // Error correction code per block: (26,19,2)
 
-    println!("{}", format!("{:b}", gf_mult_no_lut(0b10001001, 0b00101010, 0)));
+    println!("{}", format!("{:b}", gf_mult_no_lut(0b10001001, 0b00101010, 0x12d)));
 }
 
 fn gf_mult_no_lut(x: i32, y:i32, prim: i32) -> i32 {
@@ -16,7 +16,6 @@ fn gf_mult_no_lut(x: i32, y:i32, prim: i32) -> i32 {
         while (y >> i) > 0 {
             if (y & (1 << i)) == 0 {
                 z ^= (x << i)*2;
-                println!("{}", z)
             }
             i += 1
         }
@@ -24,15 +23,14 @@ fn gf_mult_no_lut(x: i32, y:i32, prim: i32) -> i32 {
     }
 
     fn bit_length(n: i32) -> u32 {
-        let length = n.count_ones() + n.count_zeros();
-        let mut result = 0;
-
-        for i in 0..length {
-            while (n >> i & 1) == 1 {
-                result = i;
+        let mut bits = 0;
+        for i in 0..(n.count_ones()+n.count_zeros()) {
+            if (n >> i & 1) == 1 {
+                bits = i;
             }
         }
-        return result;
+
+        return bits+1;
     }
 
     fn cl_div(mut dividend: i32, divisor: i32) -> i32 {
@@ -43,8 +41,10 @@ fn gf_mult_no_lut(x: i32, y:i32, prim: i32) -> i32 {
             return dividend;
         }
 
-        for i in (0..dl1-dl2).rev() {
-            dividend ^= divisor << i;
+        for i in (0..dl1-dl2+1).rev() {
+            if (dividend & (1 << i+dl2-1)) != 0 {
+                dividend ^= divisor << i;
+            }
         }
         return dividend
     }
