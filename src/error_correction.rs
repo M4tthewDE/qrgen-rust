@@ -15,14 +15,6 @@ pub struct CorrectionCalculator {
 }
 
 impl CorrectionCalculator {
-    // for version 1 and error correction L
-    pub fn _add_error_correction(_data: Vec<String>) {
-        // Total number of codewords: 26
-        // Number of error correction codewords: 7
-        // Number of error correction blocks: 1
-        // Error correction code per block: (26,19,2)
-    }
-
     pub fn init_tables(&mut self) {
         let mut gf_exp: Vec<u32> = (0..512).collect();
         let mut gf_log: Vec<u32> = (0..256).collect();
@@ -45,11 +37,19 @@ impl CorrectionCalculator {
         self.gf_log = gf_log;
     }
 
+    // for version 1 and error correction L
+    pub fn _add_error_correction(_data: Vec<String>) {
+        // Total number of codewords: 26
+        // Number of error correction codewords: 7
+        // Number of error correction blocks: 1
+        // Error correction code per block: (26,19,2)
+    }
+
     fn gf_mul(self, x: u32, y: u32) -> u32 {
         if x == 0 || y == 0 {
             return 0;
         }
-        return self.gf_exp[(self.gf_log[x as usize] + self.gf_log[y as usize]) as usize];
+        self.gf_exp[(self.gf_log[x as usize] + self.gf_log[y as usize]) as usize]
     }
 
     fn gf_div(self, x: u32, y: u32) -> u32 {
@@ -59,15 +59,15 @@ impl CorrectionCalculator {
         if x == 0 {
             return 0;
         }
-        return self.gf_exp[((self.gf_log[x as usize]+255 - self.gf_log[y as usize]) % 255) as usize];
+        self.gf_exp[((self.gf_log[x as usize]+255 - self.gf_log[y as usize]) % 255) as usize]
     }
 
     fn gf_pow(self, x: u32, power: u32) -> u32 {
-        return self.gf_exp[((self.gf_log[x as usize] * power)) as usize]
+        self.gf_exp[(self.gf_log[x as usize] * power) as usize]
     }
 
     fn gf_inverse(self, x: u32) -> u32 {
-        return self.gf_exp[(255 - self.gf_log[x as usize]) as usize]
+        self.gf_exp[(255 - self.gf_log[x as usize]) as usize]
     }
 }
 
