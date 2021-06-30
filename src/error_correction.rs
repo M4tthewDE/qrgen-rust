@@ -22,6 +22,7 @@ fn gf_mult_no_lut(x: i32, y:i32, prim: i32) -> i32 {
         return z;
     }
 
+    // compute position of the most significant bit
     fn bit_length(n: i32) -> u32 {
         let mut bits = 0;
         for i in 0..(n.count_ones()+n.count_zeros()) {
@@ -33,6 +34,7 @@ fn gf_mult_no_lut(x: i32, y:i32, prim: i32) -> i32 {
         return bits+1;
     }
 
+    // carry-less long division, returns remainder
     fn cl_div(mut dividend: i32, divisor: i32) -> i32 {
         let dl1 = bit_length(dividend);
         let dl2 = bit_length(divisor);
@@ -51,6 +53,7 @@ fn gf_mult_no_lut(x: i32, y:i32, prim: i32) -> i32 {
 
     let mut result = cl_mult(x, y);
 
+    // modular reduction
     if prim > 0 {
         result = cl_div(result, prim);
     }
