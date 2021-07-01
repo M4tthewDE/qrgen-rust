@@ -9,6 +9,7 @@ pub fn build_correction_calculator() -> CorrectionCalculator {
     correction_calculator
 }
 
+#[derive(Clone)]
 pub struct CorrectionCalculator {
     pub gf_log: Vec<u32>,
     pub gf_exp: Vec<u32>
@@ -68,6 +69,14 @@ impl CorrectionCalculator {
 
     fn gf_inverse(self, x: u32) -> u32 {
         self.gf_exp[(255 - self.gf_log[x as usize]) as usize]
+    }
+
+    fn gf_poly_scale(self, p: Vec<u32>, x: u32) -> Vec<u32> {
+        let mut r: Vec<u32> = (0..p.len() as u32).collect(); 
+        for i in 0..p.len() {
+            r[i] = self.clone().gf_mul(p[i], x); 
+        }
+        r
     }
 }
 

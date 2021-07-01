@@ -177,6 +177,4 @@ fn codeword_conversion(data: &str) {
         }
     }
     let correction_calculator: CorrectionCalculator = build_correction_calculator();
-    println!("{:?}", correction_calculator.gf_log);
-    println!("{:?}", correction_calculator.gf_exp);
 }
