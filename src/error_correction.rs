@@ -1,3 +1,5 @@
+use std::cmp;
+
 const PRIM: u32 = 0x11d;
 
 pub fn build_correction_calculator() -> CorrectionCalculator {
@@ -75,6 +77,18 @@ impl CorrectionCalculator {
         let mut r: Vec<u32> = (0..p.len() as u32).collect(); 
         for i in 0..p.len() {
             r[i] = self.clone().gf_mul(p[i], x); 
+        }
+        r
+    }
+
+    fn gf_poly_add(self, p: Vec<u32>, q: Vec<u32>) -> Vec<u32> {
+        let mut r: Vec<u32> = (0..cmp::max(p.len(), q.len()) as u32).collect(); 
+        let len_tmp = r.len();
+        for i in 0..p.len() {
+            r[i+len_tmp-p.len()] = p[i];
+        }
+        for i in 0..q.len() {
+            r[i+len_tmp-q.len()] ^= q[i];
         }
         r
     }
