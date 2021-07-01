@@ -42,12 +42,16 @@ impl CorrectionCalculator {
         self.gf_log = gf_log;
     }
 
-    // for version 1 and error correction L
-    pub fn _add_error_correction(_data: Vec<String>) {
-        // Total number of codewords: 26
-        // Number of error correction codewords: 7
-        // Number of error correction blocks: 1
-        // Error correction code per block: (26,19,2)
+    pub fn rs_encode_msg(self, mut msg_in: Vec<i32>, nsym: i32) -> Vec<i32> {
+        let mut msg_out = msg_in.to_owned();
+        let gen = self.clone().rs_generatory_poly(nsym);
+        for _ in 0..gen.len()-1 {
+            msg_in.push(0);
+        }
+
+        let mut results = self.gf_poly_div(msg_in, gen);
+        msg_out.append(&mut results.1);
+        msg_out
     }
 
     fn gf_mul(self, x: i32, y: i32) -> i32 {
@@ -98,7 +102,7 @@ impl CorrectionCalculator {
     fn gf_poly_mul(self, p: Vec<i32>, q: Vec<i32>) -> Vec<i32> {
         let mut r: Vec<i32> = (0..cmp::max(p.len(), q.len()-1) as i32).collect(); 
 
-        for j in 0..q.len() {
+        for j in 0..q.len()-1 {
             for i in 0..p.len() {
                 r[i+j] ^= self.clone().gf_mul(p[i], q[j]);
             }
@@ -127,15 +131,16 @@ impl CorrectionCalculator {
                 }
             }
         }
-        let separator = -((divisor.len()-1) as i32);
-        return (msg_out[(0..separator as usize)].to_vec(), msg_out[separator as usize..msg_out.len()].to_vec())
+        let separator = msg_out.len() - ((divisor.len()-1));
+        return (msg_out[(..separator as usize)].to_vec(), msg_out[separator as usize..].to_vec())
     }
 
-    fn rs_generatory_poly(self, n_symbols: i32) {
+    fn rs_generatory_poly(self, n_symbols: i32) -> Vec<i32> {
         let mut g_poly: Vec<i32> = (0..n_symbols).collect();
         for i in 0..n_symbols {
             g_poly = self.clone().gf_poly_mul(g_poly, [1, self.clone().gf_pow(2, i)].to_vec());
         }
+        g_poly
     }
 
 }

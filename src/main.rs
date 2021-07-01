@@ -176,5 +176,24 @@ fn codeword_conversion(data: &str) {
             data_str.push("00010001".to_string());            
         }
     }
+
+    
+    // Total number of codewords: 26
+    // Number of error correction codewords: 7
+    // Number of error correction blocks: 1
+    // Error correction code per block: (26,19,2)
     let correction_calculator: CorrectionCalculator = build_correction_calculator();
+    
+    // convert strings to i32s
+    let mut data_int = vec!();
+    for e in data_str.iter() {
+        data_int.push(e.parse::<i32>().unwrap());
+    }
+
+    let test_data = vec![0x40, 0xd2, 0x75, 0x47, 0x76, 0x17, 0x32, 0x06,
+                         0x27, 0x26, 0x96, 0xc6, 0xc6, 0x96, 0x70, 0xec];
+    let result = correction_calculator.rs_encode_msg(test_data, 10);
+    for i in result {
+        println!("{:x}", i);
+    }
 }
