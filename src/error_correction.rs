@@ -1,3 +1,5 @@
+// Source: https://en.wikiversity.org/wiki/Reed%E2%80%93Solomon_codes_for_coders#RS_encoding
+
 use std::cmp;
 
 const PRIM: u32 = 0x11d;
@@ -92,15 +94,24 @@ impl CorrectionCalculator {
         }
         r
     }
+
     fn gf_poly_mul(self, p: Vec<u32>, q: Vec<u32>) -> Vec<u32> {
         let mut r: Vec<u32> = (0..cmp::max(p.len(), q.len()-1) as u32).collect(); 
 
         for j in 0..q.len() {
             for i in 0..p.len() {
-                r[i+j] ^= self.clone().gf_mul(p[i], q[j])
+                r[i+j] ^= self.clone().gf_mul(p[i], q[j]);
             }
         }
         r
+    }
+
+    fn gf_poly_eval(self, poly: Vec<u32>, x: u32) -> u32 {
+        let mut y = poly[0];
+        for i in 1..poly.len() {
+            y = self.clone().gf_mul(y, x) ^ poly[i];
+        }
+        y
     }
 }
 
