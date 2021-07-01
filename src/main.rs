@@ -193,7 +193,4 @@ fn codeword_conversion(data: &str) {
     let test_data = vec![0x40, 0xd2, 0x75, 0x47, 0x76, 0x17, 0x32, 0x06,
                          0x27, 0x26, 0x96, 0xc6, 0xc6, 0x96, 0x70, 0xec];
     let result = correction_calculator.rs_encode_msg(test_data, 10);
-    for i in result {
-        println!("{:x}", i);
-    }
 }

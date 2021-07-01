@@ -45,10 +45,12 @@ impl CorrectionCalculator {
     pub fn rs_encode_msg(self, mut msg_in: Vec<i32>, nsym: i32) -> Vec<i32> {
         let mut msg_out = msg_in.to_owned();
         let gen = self.clone().rs_generatory_poly(nsym);
+        println!("{:?}", gen);
         for _ in 0..gen.len()-1 {
             msg_in.push(0);
         }
 
+        // TODO fix poly division
         let mut results = self.gf_poly_div(msg_in, gen);
         msg_out.append(&mut results.1);
         msg_out
@@ -100,9 +102,12 @@ impl CorrectionCalculator {
     }
 
     fn gf_poly_mul(self, p: Vec<i32>, q: Vec<i32>) -> Vec<i32> {
-        let mut r: Vec<i32> = (0..cmp::max(p.len(), q.len()-1) as i32).collect(); 
+        let mut r: Vec<i32> = vec!(); 
+        for _ in 0..(p.len()+q.len()-1) {
+            r.push(0);
+        }
 
-        for j in 0..q.len()-1 {
+        for j in 0..q.len() {
             for i in 0..p.len() {
                 r[i+j] ^= self.clone().gf_mul(p[i], q[j]);
             }
@@ -136,13 +141,12 @@ impl CorrectionCalculator {
     }
 
     fn rs_generatory_poly(self, n_symbols: i32) -> Vec<i32> {
-        let mut g_poly: Vec<i32> = (0..n_symbols).collect();
+        let mut g_poly: Vec<i32> = vec![1];
         for i in 0..n_symbols {
             g_poly = self.clone().gf_poly_mul(g_poly, [1, self.clone().gf_pow(2, i)].to_vec());
         }
         g_poly
     }
-
 }
 
 fn gf_mult_no_lut(x: i32, y:i32, prim: i32) -> i32 {
