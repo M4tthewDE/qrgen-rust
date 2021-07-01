@@ -1,7 +1,5 @@
 // Source: https://en.wikiversity.org/wiki/Reed%E2%80%93Solomon_codes_for_coders#RS_encoding
 
-use std::cmp;
-
 const PRIM: i32 = 0x11d;
 
 pub fn build_correction_calculator() -> CorrectionCalculator {
@@ -45,6 +43,7 @@ impl CorrectionCalculator {
     pub fn rs_encode_msg(self, mut msg_in: Vec<i32>, nsym: i32) -> Vec<i32> {
         let mut msg_out = msg_in.to_owned();
         let gen = self.clone().rs_generatory_poly(nsym);
+
         for _ in 0..gen.len()-1 {
             msg_in.push(0);
         }
@@ -59,8 +58,7 @@ impl CorrectionCalculator {
         if x == 0 || y == 0 {
             return 0;
         }
-        let test = self.gf_exp[(self.gf_log[x as usize] + self.gf_log[y as usize]) as usize];
-        test
+        self.gf_exp[(self.gf_log[x as usize] + self.gf_log[y as usize]) as usize]
     }
 
     fn gf_pow(self, x: i32, power: i32) -> i32 {
@@ -93,8 +91,8 @@ impl CorrectionCalculator {
                 }
             }
         }
-        let separator = msg_out.len() - ((divisor.len()-1));
-        return (msg_out[(..separator as usize)].to_vec(), msg_out[separator as usize..].to_vec())
+        let separator = msg_out.len() - (divisor.len()-1);
+        (msg_out[(..separator as usize)].to_vec(), msg_out[separator as usize..].to_vec())
     }
 
     fn rs_generatory_poly(self, n_symbols: i32) -> Vec<i32> {
