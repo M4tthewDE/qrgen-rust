@@ -113,6 +113,13 @@ impl CorrectionCalculator {
         }
         y
     }
+
+    fn rs_generatory_poly(self, n_symbols: u32) {
+        let mut g_poly: Vec<u32> = (0..n_symbols).collect();
+        for i in 0..n_symbols {
+            g_poly = self.clone().gf_poly_mul(g_poly, [1, self.clone().gf_pow(2, i)].to_vec());
+        }
+    }
 }
 
 fn gf_mult_no_lut(x: u32, y:u32, prim: u32) -> u32 {
