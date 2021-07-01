@@ -2,7 +2,7 @@
 
 use std::cmp;
 
-const PRIM: u32 = 0x11d;
+const PRIM: i32 = 0x11d;
 
 pub fn build_correction_calculator() -> CorrectionCalculator {
     let mut correction_calculator = CorrectionCalculator {
@@ -15,14 +15,14 @@ pub fn build_correction_calculator() -> CorrectionCalculator {
 
 #[derive(Clone)]
 pub struct CorrectionCalculator {
-    pub gf_log: Vec<u32>,
-    pub gf_exp: Vec<u32>
+    pub gf_log: Vec<i32>,
+    pub gf_exp: Vec<i32>
 }
 
 impl CorrectionCalculator {
     pub fn init_tables(&mut self) {
-        let mut gf_exp: Vec<u32> = (0..512).collect();
-        let mut gf_log: Vec<u32> = (0..256).collect();
+        let mut gf_exp: Vec<i32> = (0..512).collect();
+        let mut gf_log: Vec<i32> = (0..256).collect();
 
         let mut count_helper = 0;
         let mut x = 1;
@@ -50,14 +50,14 @@ impl CorrectionCalculator {
         // Error correction code per block: (26,19,2)
     }
 
-    fn gf_mul(self, x: u32, y: u32) -> u32 {
+    fn gf_mul(self, x: i32, y: i32) -> i32 {
         if x == 0 || y == 0 {
             return 0;
         }
         self.gf_exp[(self.gf_log[x as usize] + self.gf_log[y as usize]) as usize]
     }
 
-    fn gf_div(self, x: u32, y: u32) -> u32 {
+    fn gf_div(self, x: i32, y: i32) -> i32 {
         if y == 0 {
             panic!("ZeroDivision");
         } 
@@ -67,24 +67,24 @@ impl CorrectionCalculator {
         self.gf_exp[((self.gf_log[x as usize]+255 - self.gf_log[y as usize]) % 255) as usize]
     }
 
-    fn gf_pow(self, x: u32, power: u32) -> u32 {
+    fn gf_pow(self, x: i32, power: i32) -> i32 {
         self.gf_exp[(self.gf_log[x as usize] * power) as usize]
     }
 
-    fn gf_inverse(self, x: u32) -> u32 {
+    fn gf_inverse(self, x: i32) -> i32 {
         self.gf_exp[(255 - self.gf_log[x as usize]) as usize]
     }
 
-    fn gf_poly_scale(self, p: Vec<u32>, x: u32) -> Vec<u32> {
-        let mut r: Vec<u32> = (0..p.len() as u32).collect(); 
+    fn gf_poly_scale(self, p: Vec<i32>, x: i32) -> Vec<i32> {
+        let mut r: Vec<i32> = (0..p.len() as i32).collect(); 
         for i in 0..p.len() {
             r[i] = self.clone().gf_mul(p[i], x); 
         }
         r
     }
 
-    fn gf_poly_add(self, p: Vec<u32>, q: Vec<u32>) -> Vec<u32> {
-        let mut r: Vec<u32> = (0..cmp::max(p.len(), q.len()) as u32).collect(); 
+    fn gf_poly_add(self, p: Vec<i32>, q: Vec<i32>) -> Vec<i32> {
+        let mut r: Vec<i32> = (0..cmp::max(p.len(), q.len()) as i32).collect(); 
         let len_tmp = r.len();
         for i in 0..p.len() {
             r[i+len_tmp-p.len()] = p[i];
@@ -95,8 +95,8 @@ impl CorrectionCalculator {
         r
     }
 
-    fn gf_poly_mul(self, p: Vec<u32>, q: Vec<u32>) -> Vec<u32> {
-        let mut r: Vec<u32> = (0..cmp::max(p.len(), q.len()-1) as u32).collect(); 
+    fn gf_poly_mul(self, p: Vec<i32>, q: Vec<i32>) -> Vec<i32> {
+        let mut r: Vec<i32> = (0..cmp::max(p.len(), q.len()-1) as i32).collect(); 
 
         for j in 0..q.len() {
             for i in 0..p.len() {
@@ -106,7 +106,7 @@ impl CorrectionCalculator {
         r
     }
 
-    fn gf_poly_eval(self, poly: Vec<u32>, x: u32) -> u32 {
+    fn gf_poly_eval(self, poly: Vec<i32>, x: i32) -> i32 {
         let mut y = poly[0];
         for i in 1..poly.len() {
             y = self.clone().gf_mul(y, x) ^ poly[i];
@@ -114,17 +114,35 @@ impl CorrectionCalculator {
         y
     }
 
-    fn rs_generatory_poly(self, n_symbols: u32) {
-        let mut g_poly: Vec<u32> = (0..n_symbols).collect();
+    fn gf_poly_div(self, dividend: Vec<i32>, divisor: Vec<i32>) -> (Vec<i32>, Vec<i32>) {
+        // not sure if this actually copies, need to investigate if something goes wrong!
+        let mut msg_out = dividend.to_vec();
+        for i in 0..dividend.len() {
+            let coef = msg_out[1];
+            if coef != 0 {
+                for j in 1..divisor.len() {
+                    if divisor[j] != 0 {
+                        msg_out[i+j] ^= self.clone().gf_mul(divisor[j], coef);
+                    }
+                }
+            }
+        }
+        let separator = -((divisor.len()-1) as i32);
+        return (msg_out[(0..separator as usize)].to_vec(), msg_out[separator as usize..msg_out.len()].to_vec())
+    }
+
+    fn rs_generatory_poly(self, n_symbols: i32) {
+        let mut g_poly: Vec<i32> = (0..n_symbols).collect();
         for i in 0..n_symbols {
             g_poly = self.clone().gf_poly_mul(g_poly, [1, self.clone().gf_pow(2, i)].to_vec());
         }
     }
+
 }
 
-fn gf_mult_no_lut(x: u32, y:u32, prim: u32) -> u32 {
+fn gf_mult_no_lut(x: i32, y:i32, prim: i32) -> i32 {
 
-    fn cl_mult(x: u32, y: u32) -> u32 {
+    fn cl_mult(x: i32, y: i32) -> i32 {
         let mut z = 0;
         let mut i = 0;
         while (y >> i) > 0 {
@@ -137,7 +155,7 @@ fn gf_mult_no_lut(x: u32, y:u32, prim: u32) -> u32 {
     }
 
     // compute position of the most significant bit
-    fn bit_length(n: u32) -> u32 {
+    fn bit_length(n: i32) -> i32 {
         let mut bits = 0;
         for i in 0..(n.count_ones()+n.count_zeros()) {
             if (n >> i & 1) == 1 {
@@ -145,11 +163,11 @@ fn gf_mult_no_lut(x: u32, y:u32, prim: u32) -> u32 {
             }
         }
 
-        bits+1
+        (bits+1) as i32
     }
 
     // carry-less long division, returns remainder
-    fn cl_div(mut dividend: u32, divisor: u32) -> u32 {
+    fn cl_div(mut dividend: i32, divisor: i32) -> i32 {
         let dl1 = bit_length(dividend);
         let dl2 = bit_length(divisor);
 
