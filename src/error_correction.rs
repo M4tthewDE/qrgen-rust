@@ -92,6 +92,16 @@ impl CorrectionCalculator {
         }
         r
     }
+    fn gf_poly_mul(self, p: Vec<u32>, q: Vec<u32>) -> Vec<u32> {
+        let mut r: Vec<u32> = (0..cmp::max(p.len(), q.len()-1) as u32).collect(); 
+
+        for j in 0..q.len() {
+            for i in 0..p.len() {
+                r[i+j] ^= self.clone().gf_mul(p[i], q[j])
+            }
+        }
+        r
+    }
 }
 
 fn gf_mult_no_lut(x: u32, y:u32, prim: u32) -> u32 {
