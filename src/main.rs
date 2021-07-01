@@ -6,6 +6,7 @@ mod error_correction;
 use error_correction::{build_correction_calculator, CorrectionCalculator};
 
 use image::{ImageBuffer, RgbImage};
+use std::i32;
 
 fn main() {
     generate_image()
@@ -187,10 +188,10 @@ fn codeword_conversion(data: &str) {
     // convert strings to i32s
     let mut data_int = vec!();
     for e in data_str.iter() {
-        data_int.push(e.parse::<i32>().unwrap());
+        data_int.push(i32::from_str_radix(e, 2).unwrap());
     }
 
-    let test_data = vec![0x40, 0xd2, 0x75, 0x47, 0x76, 0x17, 0x32, 0x06,
-                         0x27, 0x26, 0x96, 0xc6, 0xc6, 0x96, 0x70, 0xec];
-    let result = correction_calculator.rs_encode_msg(test_data, 10);
+    let result = correction_calculator.rs_encode_msg(data_int, 7);
+    println!("{:?}", result);
+    println!("{}", result.len());
 }

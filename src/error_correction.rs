@@ -45,7 +45,6 @@ impl CorrectionCalculator {
     pub fn rs_encode_msg(self, mut msg_in: Vec<i32>, nsym: i32) -> Vec<i32> {
         let mut msg_out = msg_in.to_owned();
         let gen = self.clone().rs_generatory_poly(nsym);
-        println!("{:?}", gen);
         for _ in 0..gen.len()-1 {
             msg_in.push(0);
         }
@@ -60,45 +59,12 @@ impl CorrectionCalculator {
         if x == 0 || y == 0 {
             return 0;
         }
-        self.gf_exp[(self.gf_log[x as usize] + self.gf_log[y as usize]) as usize]
-    }
-
-    fn gf_div(self, x: i32, y: i32) -> i32 {
-        if y == 0 {
-            panic!("ZeroDivision");
-        } 
-        if x == 0 {
-            return 0;
-        }
-        self.gf_exp[((self.gf_log[x as usize]+255 - self.gf_log[y as usize]) % 255) as usize]
+        let test = self.gf_exp[(self.gf_log[x as usize] + self.gf_log[y as usize]) as usize];
+        test
     }
 
     fn gf_pow(self, x: i32, power: i32) -> i32 {
         self.gf_exp[(self.gf_log[x as usize] * power) as usize]
-    }
-
-    fn gf_inverse(self, x: i32) -> i32 {
-        self.gf_exp[(255 - self.gf_log[x as usize]) as usize]
-    }
-
-    fn gf_poly_scale(self, p: Vec<i32>, x: i32) -> Vec<i32> {
-        let mut r: Vec<i32> = (0..p.len() as i32).collect(); 
-        for i in 0..p.len() {
-            r[i] = self.clone().gf_mul(p[i], x); 
-        }
-        r
-    }
-
-    fn gf_poly_add(self, p: Vec<i32>, q: Vec<i32>) -> Vec<i32> {
-        let mut r: Vec<i32> = (0..cmp::max(p.len(), q.len()) as i32).collect(); 
-        let len_tmp = r.len();
-        for i in 0..p.len() {
-            r[i+len_tmp-p.len()] = p[i];
-        }
-        for i in 0..q.len() {
-            r[i+len_tmp-q.len()] ^= q[i];
-        }
-        r
     }
 
     fn gf_poly_mul(self, p: Vec<i32>, q: Vec<i32>) -> Vec<i32> {
@@ -115,19 +81,10 @@ impl CorrectionCalculator {
         r
     }
 
-    fn gf_poly_eval(self, poly: Vec<i32>, x: i32) -> i32 {
-        let mut y = poly[0];
-        for i in 1..poly.len() {
-            y = self.clone().gf_mul(y, x) ^ poly[i];
-        }
-        y
-    }
-
     fn gf_poly_div(self, dividend: Vec<i32>, divisor: Vec<i32>) -> (Vec<i32>, Vec<i32>) {
-        // not sure if this actually copies, need to investigate if something goes wrong!
         let mut msg_out = dividend.to_vec();
-        for i in 0..dividend.len() {
-            let coef = msg_out[1];
+        for i in 0..(dividend.len()-(divisor.len()-1)) {
+            let coef = msg_out[i];
             if coef != 0 {
                 for j in 1..divisor.len() {
                     if divisor[j] != 0 {
