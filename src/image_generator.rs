@@ -84,12 +84,16 @@ impl ImageGenerator {
         }
 
         let mut test: u32 = 0;
-        for (i, pos) in CODEWORD_POSITIONS {
+        for (_, pos) in CODEWORD_POSITIONS {
             for coords in pos {
-                println!("{:?}", coords);
                *self.image.get_pixel_mut(coords.0, coords.1) = image::Rgb([test as u8, 0, 0]);
             }
             test += 30;
+        }
+        for (_, pos) in FORMAT_VERSION_POSITIONS {
+            for coords in pos {
+               *self.image.get_pixel_mut(coords.0, coords.1) = image::Rgb([0, 255, 0]);
+            }
         }
     }
 }
@@ -130,4 +134,14 @@ const CODEWORD_POSITIONS: [(usize, [(u32,u32); 8]); 26] = [
     (1, [(3,12), (3,11), (3,10), (3,9), (2,12), (2,11), (2,10), (2,9)]),
     // column 10
     (1, [(1,12), (1,11), (1,10), (1,9), (0,12), (0,11), (0,10), (0,9)]),
+];
+
+const FORMAT_VERSION_POSITIONS: [(usize, [(u32,u32); 8]); 4] = [
+    // top left
+    (1, [(0,8), (1,8), (2,8), (3,8), (4,8), (5,8), (7,8), (8,8)]),
+    (1, [(8,0), (8,1), (8,2), (8,3), (8,4), (8,5), (8,8), (8,7)]),
+    // bottom left
+    (1, [(8,13), (8,14), (8,15), (8,16), (8,17), (8,18), (8,19), (8,20)]),
+    // top right
+    (1, [(13,8), (14,8), (15,8), (16,8), (17,8), (18,8), (19,8), (20,8)]),
 ];
