@@ -88,7 +88,7 @@ fn encode_data(input: &str) -> Vec<i32> {
         result += e;
     }
 
-    return codeword_conversion(&result);
+    codeword_conversion(&result)
 }
 
 fn codeword_conversion(data: &str) -> Vec<i32> {
@@ -154,10 +154,10 @@ fn codeword_conversion(data: &str) -> Vec<i32> {
     }
 
     let error_correction_codwords = correction_calculator.rs_encode_msg(data_codewords.to_owned(), 7);
-    return construct_final_message(data_codewords, error_correction_codwords);
+    construct_final_message(data_codewords, error_correction_codwords)
 }
 
 fn construct_final_message(mut data_codewords: Vec<i32>, mut error_correction_codewords: Vec<i32>) -> Vec<i32> {
     data_codewords.append(&mut error_correction_codewords);
-    return data_codewords;
+    data_codewords
 }
