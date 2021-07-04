@@ -10,13 +10,14 @@ use image_generator::ImageGenerator;
 use std::i32;
 
 fn main() {
+    let input = "12345";
+    let message = encode_data(input);
+    
     let image_generator = ImageGenerator{};
     image_generator.generate_image();
-    let input = "12345";
-    encode_data(input);
 }
 
-fn encode_data(input: &str) {
+fn encode_data(input: &str) -> Vec<i32> {
     let mode = "0001";
     let mut length = format!("{:b}", input.chars().count());              
 
@@ -85,10 +86,10 @@ fn encode_data(input: &str) {
         result += e;
     }
 
-    codeword_conversion(&result);
+    return codeword_conversion(&result);
 }
 
-fn codeword_conversion(data: &str) {
+fn codeword_conversion(data: &str) -> Vec<i32> {
 
     // divide in parts with length=8
     let mut data_str = vec![];
@@ -151,11 +152,10 @@ fn codeword_conversion(data: &str) {
     }
 
     let error_correction_codwords = correction_calculator.rs_encode_msg(data_codewords.to_owned(), 7);
-    construct_final_message(data_codewords, error_correction_codwords);
+    return construct_final_message(data_codewords, error_correction_codwords);
 }
 
-fn construct_final_message(mut data_codewords: Vec<i32>, mut error_correction_codewords: Vec<i32>) {
+fn construct_final_message(mut data_codewords: Vec<i32>, mut error_correction_codewords: Vec<i32>) -> Vec<i32> {
     data_codewords.append(&mut error_correction_codewords);
-    let data_block = data_codewords;
-    println!("{:?}", data_block);
+    return data_codewords;
 }
