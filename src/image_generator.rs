@@ -1,12 +1,14 @@
 use image::{RgbImage};
 
 pub struct ImageGenerator {
-    pub image: RgbImage
+    pub image: RgbImage,
+    pub message: Vec<i32>
 }
 
 impl ImageGenerator {
     pub fn generate_image(mut self) {
         self.setup();
+        self.place_data();
         self.image.save("qr.png").unwrap(); 
     }
 
@@ -53,6 +55,28 @@ impl ImageGenerator {
                 *self.image.get_pixel_mut(6, i) = image::Rgb([255, 255, 255u8]);
                 *self.image.get_pixel_mut(i, 6) = image::Rgb([255, 255, 255u8]);
             }
+        }
+    }
+
+    fn place_data(&mut self) {
+        let message_int = self.message.to_owned();
+
+        // convert to binary
+        let mut codewords_binary= vec![];
+        for part in message_int {
+            codewords_binary.push(format!("{:b}", part));
+        }
+
+        // fill with leading zeros
+        for part in codewords_binary.iter_mut() {
+            while part.chars().count() < 8 {
+                *part = "0".to_string() + part;   
+            }
+        }
+        println!("{:?}", codewords_binary);
+
+        for codeword in codewords_binary {
+            // TODO place in image matrix
         }
     }
 }

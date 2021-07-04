@@ -15,7 +15,9 @@ fn main() {
     let message = encode_data(input);
 
     let image_generator = ImageGenerator{
-        image: ImageBuffer::new(21, 21)};
+        image: ImageBuffer::new(21, 21),
+        message: message
+    };
     image_generator.generate_image();
 }
 
