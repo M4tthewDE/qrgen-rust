@@ -3,58 +3,17 @@
 extern crate image;
 
 mod error_correction;
+mod image_generator;
 use error_correction::{build_correction_calculator, CorrectionCalculator};
+use image_generator::ImageGenerator;
 
-use image::{ImageBuffer, RgbImage};
 use std::i32;
 
 fn main() {
-    generate_image()
-}
-
-fn generate_image() {
+    let image_generator = ImageGenerator{};
+    image_generator.generate_image();
     let input = "12345";
-
-    let buf: RgbImage = ImageBuffer::new(21, 21);
-    setup(buf);
-
     encode_data(input);
-}
-
-fn setup(mut buf: RgbImage) {
-    // fill image out with white pixels
-    for (_, _, pixel) in buf.enumerate_pixels_mut() {
-        *pixel = image::Rgb([255, 255, 255u8]);
-    }
-    add_pos_patterns(buf)
-}
-
-fn add_pos_patterns(mut buf: RgbImage) {
-    for i in 0..7 {
-        *buf.get_pixel_mut(0, i) = image::Rgb([0, 0 , 0u8]);
-        *buf.get_pixel_mut(6, i) = image::Rgb([0, 0 , 0u8]);
-        *buf.get_pixel_mut(i, 0) = image::Rgb([0, 0 , 0u8]);
-        *buf.get_pixel_mut(i, 6) = image::Rgb([0, 0 , 0u8]);
-
-        *buf.get_pixel_mut(0, i+14) = image::Rgb([0, 0 , 0u8]);
-        *buf.get_pixel_mut(6, i+14) = image::Rgb([0, 0 , 0u8]);
-        *buf.get_pixel_mut(i+14, 0) = image::Rgb([0, 0 , 0u8]);
-        *buf.get_pixel_mut(i+14, 6) = image::Rgb([0, 0 , 0u8]);
-
-        *buf.get_pixel_mut(14, i) = image::Rgb([0, 0 , 0u8]);
-        *buf.get_pixel_mut(20, i) = image::Rgb([0, 0 , 0u8]);
-        *buf.get_pixel_mut(i, 14) = image::Rgb([0, 0 , 0u8]);
-        *buf.get_pixel_mut(i, 20) = image::Rgb([0, 0 , 0u8]);
-    }
-    for i in 2..5 {
-        for j in 2..5 {
-            *buf.get_pixel_mut(i, j) = image::Rgb([0, 0 , 0u8]);
-            *buf.get_pixel_mut(i, j+14) = image::Rgb([0, 0 , 0u8]);
-            *buf.get_pixel_mut(i+14, j) = image::Rgb([0, 0 , 0u8]);
-        }
-    }
-
-    buf.save("qr.png").unwrap(); 
 }
 
 fn encode_data(input: &str) {
@@ -178,7 +137,6 @@ fn codeword_conversion(data: &str) {
         }
     }
 
-    
     // Total number of codewords: 26
     // Number of error correction codewords: 7
     // Number of error correction blocks: 1
