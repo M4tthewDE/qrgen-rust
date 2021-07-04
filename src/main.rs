@@ -6,6 +6,7 @@ mod error_correction;
 mod image_generator;
 use error_correction::{build_correction_calculator, CorrectionCalculator};
 use image_generator::ImageGenerator;
+use image::ImageBuffer;
 
 use std::i32;
 
@@ -13,7 +14,8 @@ fn main() {
     let input = "12345";
     let message = encode_data(input);
 
-    let image_generator = ImageGenerator{};
+    let image_generator = ImageGenerator{
+        image: ImageBuffer::new(21, 21)};
     image_generator.generate_image();
 }
 
