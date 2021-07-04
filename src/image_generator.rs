@@ -5,19 +5,21 @@ pub struct ImageGenerator {
 
 impl ImageGenerator {
     pub fn generate_image(self) {
-        let buf: RgbImage = ImageBuffer::new(21, 21);
-        self.setup(buf);
+        let mut buf: RgbImage = ImageBuffer::new(21, 21);
+        self.setup(&mut buf);
+        buf.save("qr.png").unwrap(); 
     }
 
-    fn setup(self, mut buf: RgbImage) {
+    fn setup(self, buf: &mut RgbImage) {
         // fill image out with white pixels
         for (_, _, pixel) in buf.enumerate_pixels_mut() {
             *pixel = image::Rgb([255, 255, 255u8]);
         }
-        self.add_pos_patterns(buf)
+        self.create_basic_code(buf)
     }
 
-    fn add_pos_patterns(self, mut buf: RgbImage) {
+    fn create_basic_code(self, buf: &mut RgbImage) {
+        // add position indicators in corners
         for i in 0..7 {
             *buf.get_pixel_mut(0, i) = image::Rgb([0, 0 , 0u8]);
             *buf.get_pixel_mut(6, i) = image::Rgb([0, 0 , 0u8]);
@@ -41,7 +43,16 @@ impl ImageGenerator {
                 *buf.get_pixel_mut(i+14, j) = image::Rgb([0, 0 , 0u8]);
             }
         }
-
-        buf.save("qr.png").unwrap(); 
+    
+        // add timing indicators
+        for i in 8..13 {
+            if i % 2 == 0 {
+                *buf.get_pixel_mut(6, i) = image::Rgb([0, 0, 0u8]);
+                *buf.get_pixel_mut(i, 6) = image::Rgb([0, 0, 0u8]);
+            } else {
+                *buf.get_pixel_mut(6, i) = image::Rgb([255, 255, 255u8]);
+                *buf.get_pixel_mut(i, 6) = image::Rgb([255, 255, 255u8]);
+            }
+        }
     }
 }
