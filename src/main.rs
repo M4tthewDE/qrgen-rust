@@ -4,24 +4,25 @@ extern crate image;
 
 mod error_correction;
 mod image_generator;
+
 use error_correction::{build_correction_calculator, CorrectionCalculator};
 use image_generator::ImageGenerator;
 use image::ImageBuffer;
-
 use std::i32;
 
 fn main() {
     let input = "12345";
-    let message = encode_data(input);
+    let codewords = encode_data(input);
 
     let image_generator = ImageGenerator{
         image: ImageBuffer::new(21, 21),
-        message: message
+        data_codewords: codewords.0,
+        error_codewords: codewords.1
     };
     image_generator.generate_image();
 }
 
-fn encode_data(input: &str) -> Vec<i32> {
+fn encode_data(input: &str) -> (Vec<i32>, Vec<i32>) {
     let mode = "0001";
     let mut length = format!("{:b}", input.chars().count());              
 
@@ -93,7 +94,7 @@ fn encode_data(input: &str) -> Vec<i32> {
     codeword_conversion(&result)
 }
 
-fn codeword_conversion(data: &str) -> Vec<i32> {
+fn codeword_conversion(data: &str) -> (Vec<i32>, Vec<i32>) {
 
     // divide in parts with length=8
     let mut data_str = vec![];
@@ -156,10 +157,5 @@ fn codeword_conversion(data: &str) -> Vec<i32> {
     }
 
     let error_correction_codwords = correction_calculator.rs_encode_msg(data_codewords.to_owned(), 7);
-    construct_final_message(data_codewords, error_correction_codwords)
-}
-
-fn construct_final_message(mut data_codewords: Vec<i32>, mut error_correction_codewords: Vec<i32>) -> Vec<i32> {
-    data_codewords.append(&mut error_correction_codewords);
-    data_codewords
+    (data_codewords, error_correction_codwords)
 }
