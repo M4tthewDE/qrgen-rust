@@ -41,17 +41,13 @@ impl CorrectionCalculator {
     }
 
     pub fn rs_encode_msg(self, mut msg_in: Vec<i32>, nsym: i32) -> Vec<i32> {
-        let mut msg_out = msg_in.to_owned();
         let gen = self.clone().rs_generatory_poly(nsym);
 
         for _ in 0..gen.len()-1 {
             msg_in.push(0);
         }
 
-        // TODO fix poly division
-        let mut results = self.gf_poly_div(msg_in, gen);
-        msg_out.append(&mut results.1);
-        msg_out
+        self.gf_poly_div(msg_in, gen).1
     }
 
     fn gf_mul(self, x: i32, y: i32) -> i32 {

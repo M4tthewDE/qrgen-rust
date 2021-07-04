@@ -138,18 +138,24 @@ fn codeword_conversion(data: &str) {
     }
 
     // Total number of codewords: 26
-    // Number of error correction codewords: 7
+    // Number of data codewords: 19
+    // Number of error correction codewords: 7s
     // Number of error correction blocks: 1
     // Error correction code per block: (26,19,2)
     let correction_calculator: CorrectionCalculator = build_correction_calculator();
     
     // convert strings to i32s
-    let mut data_int = vec!();
+    let mut data_codewords = vec!();
     for e in data_str.iter() {
-        data_int.push(i32::from_str_radix(e, 2).unwrap());
+        data_codewords.push(i32::from_str_radix(e, 2).unwrap());
     }
 
-    let result = correction_calculator.rs_encode_msg(data_int, 7);
-    println!("{:?}", result);
-    println!("{}", result.len());
+    let error_correction_codwords = correction_calculator.rs_encode_msg(data_codewords.to_owned(), 7);
+    construct_final_message(data_codewords, error_correction_codwords);
+}
+
+fn construct_final_message(mut data_codewords: Vec<i32>, mut error_correction_codewords: Vec<i32>) {
+    data_codewords.append(&mut error_correction_codewords);
+    let data_block = data_codewords;
+    println!("{:?}", data_block);
 }
