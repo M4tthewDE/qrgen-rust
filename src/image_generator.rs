@@ -84,7 +84,7 @@ impl ImageGenerator {
         }
 
         let mut test: u32 = 0;
-        for (_, pos) in CODEWORD_POSITIONS {
+        for (_, pos, _) in CODEWORD_POSITIONS {
             for coords in pos {
                *self.image.get_pixel_mut(coords.0, coords.1) = image::Rgb([test as u8, 0, 0]);
             }
